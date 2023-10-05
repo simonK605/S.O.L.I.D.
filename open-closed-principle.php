@@ -2,95 +2,64 @@
 
 // Software entities (classes, modules, functions, etc.) should be open for extension but closed for modification.
 
-// In this initial example, the DiscountCalculator class has a method to calculate discounts
-// based on a condition (e.g., total order amount). However,
-// if we need to add a new type of discount, we would need to modify the calculateDiscount method.
+// In this initial example, adding a new notification method requires modifying the existing class.
 
-class Rectangle
-{
-    public $width;
-    public $height;
-
-    public function __construct($width, $height)
-    {
-        $this->width = $width;
-        $this->height = $height;
-    }
-}
-class AreaCalculator
-{
-    public function calculateArea($shapes)
-    {
-        $area = 0;
-        foreach ($shapes as $shape) {
-            if ($shape instanceof Rectangle) {
-                $area += $shape->width * $shape->height;
-            }
-            // Add more conditions for other shapes (e.g., Circle, Triangle) in the future
+class NotificationService {
+    public function sendNotification($message, $notificationMethod) {
+        if ($notificationMethod === 'Email') {
+            // Send notification via email
+            // ...
+        } elseif ($notificationMethod === 'SMS') {
+            // Send notification via SMS
+            // ...
+        } else {
+            // Unknown notification method
+            // ...
         }
-        return $area;
     }
 }
 
+// Client code
+$notificationService = new NotificationService();
+$emailNotification = $notificationService->sendNotification('Hello!', 'Email');
+$smsNotification = $notificationService->sendNotification('Hi!', 'SMS');
 
 
 
 
-// In this improved example, the code is open for extension (we can add new discount strategies by
-// creating new classes implementing DiscountStrategy), but closed for modification
-// (we don't need to modify the DiscountCalculator class when adding new discount strategies).
 
-// This adheres to the Open/Closed Principle by allowing the system to be extended without
-// modifying existing code. Now, to add a new discount strategy, we can create a new class
-// implementing DiscountStrategy without changing the DiscountCalculator class.
+// Better Code: Adding a new notification method is done through extension, not modification.
 
-interface Shape
-{
-    public function area();
+interface Notification {
+    public function send($message);
 }
 
-class Rectangle implements Shape
-{
-    public $width;
-    public $height;
-
-    public function __construct($width, $height)
-    {
-        $this->width = $width;
-        $this->height = $height;
-    }
-
-    public function area()
-    {
-        return $this->width * $this->height;
+class EmailNotification implements Notification {
+    public function send($message) {
+        // Send notification via email
+        // ...
+        return "Email Notification sent: $message";
     }
 }
 
-class Circle implements Shape
-{
-    public $radius;
-
-    public function __construct($radius)
-    {
-        $this->radius = $radius;
-    }
-
-    public function area()
-    {
-        return pi() * pow($this->radius, 2);
+class SMSNotification implements Notification {
+    public function send($message) {
+        // Send notification via SMS
+        // ...
+        return "SMS Notification sent: $message";
     }
 }
 
-class AreaCalculator
-{
-    public function calculateArea($shapes)
-    {
-        $area = 0;
-        foreach ($shapes as $shape) {
-            if ($shape instanceof Shape) {
-                $area += $shape->area();
-            }
-        }
-        return $area;
+class NotificationService {
+    public function sendNotification(Notification $notificationMethod, $message) {
+        return $notificationMethod->send($message);
     }
 }
+
+// Client code
+$emailNotificationMethod = new EmailNotification();
+$smsNotificationMethod = new SMSNotification();
+
+$notificationService = new NotificationService();
+$emailNotification = $notificationService->sendNotification($emailNotificationMethod, 'Hello!');
+$smsNotification = $notificationService->sendNotification($smsNotificationMethod, 'Hi!');
